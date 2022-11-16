@@ -1,13 +1,17 @@
 package jpabook.jpashop.jpaMain;
 
 import jpabook.jpashop.class6.Movie;
+import jpabook.jpashop.class7.domain.Child;
 import jpabook.jpashop.class7.domain.Member7;
+import jpabook.jpashop.class7.domain.Parent;
+import jpabook.jpashop.class7.domain.Team7;
 import org.hibernate.Hibernate;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import java.util.List;
 
 public class JpaMain7 {
     public static void main(String args[] ){
@@ -116,9 +120,85 @@ public class JpaMain7 {
              * jpa 표준은 강제초기화가 없다.
              * 때문에 각 프록시의 getName과 같은 메소드를 통해 강제적으로 호출을 해야한다.
              */
+            /**
+             * 7-2-1-2
+             * */
             Hibernate.initialize(referenceMember3);
 
+            em.clear();
 
+            Team7 team2 = new Team7();
+            team2.setTeamName("teamA");
+            em.persist(team2);
+
+            Member7 member2 = new Member7();
+            member2.setName("member7");
+            member2.setTeam7(team2);
+            em.persist(member2);
+
+            em.flush();
+            em.clear();
+
+            Member7 m = em.find(Member7.class, member2.getId());
+            /**
+             * 7-2-1-2
+             * 이 시점에 쿼리가 나가게 된다.
+             * 그럼 lazy로딩으로 설정하면 연관된 프록시를 가지고 온다.
+             * .getTeamName을 사용할때 초기화가 된다.
+             * */
+            System.out.println(m.getTeam4().getTeamName());
+
+            /**
+             *7-2-3-3
+             * 조회시 쿼리가 두번 나가게 된다.
+             * jpql은 그대로 sql로 변하게 된다.
+             * 일단 Member7를 가지고 오게 된다.
+             * Member7 를 가지고 왔는데 List의 제네릭이 Member7이다.
+             * 거기에 만약 즉시 로딩이라면 Team7의 정보도 가지고 있어야되기 때문에
+             * 각각 한번 더 조회를 해버리게 된다.
+             * */
+            List<Member7> member7List = em.createQuery("select m from Member7 m",Member7.class).getResultList();
+
+
+            /**
+             * 7-3-2
+             * cascade 를 쓰지 않았을때 persist
+             * persist를 세번해야된다.
+            Child child1  = new Child();
+            Child child2 = new Child();
+
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
+
+            em.persist(parent);
+            em.persist(child1);
+            em.persist(child2);
+             * */
+
+            /**
+             * 7-3-3
+             * cascade 를 쓰면 parent만 persist하면 된다.
+             * */
+            Child child1  = new Child();
+            Child child2 = new Child();
+
+            Parent parent = new Parent();
+            parent.addChild(child1);
+            parent.addChild(child2);
+
+            em.persist(parent);
+
+            em.flush();
+            em.clear();
+
+            Parent findParent = em.find(Parent.class, parent.getId());
+            /**
+             * 7-4-2
+             * orphanRemoval이 작용을 한다.
+             * 컬렉션에서 빠진 건 삭제가 된다.
+             * */
+            findParent.getChildren().remove(0);
 
             tx.commit();
         }catch(Exception e ){

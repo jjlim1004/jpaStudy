@@ -14,7 +14,11 @@ public class Member7 {
     @Column(name = "user_name")
     private String name;
 
-    @ManyToOne
+    /**
+     * 7-2-1-1
+     * LAZY로 설정하면 Team7 객체는 프록시로 가지고 온다.
+     * */
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
     private Team7 team7;
 
@@ -38,7 +42,7 @@ public class Member7 {
         return team7;
     }
 
-    public void setTeam4(Team7 team7) {
+    public void setTeam7(Team7 team7) {
         this.team7 = team7;
         team7.getMembers().add(this);
     }
