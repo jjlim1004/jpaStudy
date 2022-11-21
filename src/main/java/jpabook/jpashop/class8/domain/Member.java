@@ -45,15 +45,52 @@ public class Member {
      private Adress workAdress;
      */
     @Embedded
-    private Adress adress;
+    private Address address;
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "city", column = @Column(name = "work_city")),
             @AttributeOverride(name = "street", column = @Column(name = "work_street")),
             @AttributeOverride(name = "zipcode", column = @Column(name = "zip_code"))
     })
-    private Adress workAdress;
+    private Address workAddress;
 
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public Period getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(Period period) {
+        this.period = period;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public Address getWorkAddress() {
+        return workAddress;
+    }
+
+    public void setWorkAddress(Address workAddress) {
+        this.workAddress = workAddress;
+    }
 }
