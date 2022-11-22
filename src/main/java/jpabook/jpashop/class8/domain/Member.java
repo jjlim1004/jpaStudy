@@ -2,6 +2,10 @@ package jpabook.jpashop.class8.domain;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Member {
@@ -36,16 +40,18 @@ public class Member {
 
     /**
      * 8-2-2-4
+     * 같은 Address 타입이 두개이다.
      * 이렇게 임베디드 타입을 두번 쓰면 오류가 난다.
      * 이때 @AttributeOverride(name=매핑할 필드 이름, column=@Column(name="db에서 쓸 칼럼이름"))
      * 을 해줘야된다.
      @Embedded
-     private Adress adress;
+     private Address address;
      @Embedded
-     private Adress workAdress;
+     private Address workAddress;
      */
     @Embedded
     private Address address;
+
     @Embedded
     @AttributeOverrides({
             @AttributeOverride(name = "city", column = @Column(name = "work_city")),
@@ -53,6 +59,38 @@ public class Member {
             @AttributeOverride(name = "zipcode", column = @Column(name = "zip_code"))
     })
     private Address workAddress;
+
+
+    /**
+     * 8-2-3-1
+     *  값 타입 컬렉션이라는 걸 명시하기 위해 @ElementCollection 을 사용한다.
+     *  테이블이 만들어지기 때문에 table의 정보도 지정해줘야된다.
+     *  테이블 정보중에 fk를 지정해줘야되기 때문에 @JoinColumn 을 사용한다.
+     *
+     *  @ElementCollection 의 기본 fetch값은 LAZY다.
+     *
+     * */
+    @ElementCollection
+    @CollectionTable(
+            name = "ADDRESS_HISTORY"
+            ,joinColumns = @JoinColumn(name = "member_id")
+    )
+    @Embedded
+    private List<Address> addressHistory;
+
+
+    /**
+     * 8-2-3-2
+     * 제네릭이 String같이 값이 하나인경우애는 
+     * @Column 어노테이션을 허용해준다.
+     * */
+    @ElementCollection
+    @CollectionTable(
+            name = "FAVORITE_FOOD"
+            ,joinColumns = @JoinColumn(name = "member_id")
+    )
+    @Column(name = "FOOD_NAME")
+    private Set<String> favoriteFoods = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -92,5 +130,21 @@ public class Member {
 
     public void setWorkAddress(Address workAddress) {
         this.workAddress = workAddress;
+    }
+
+    public List<Address> getAddressHistory() {
+        return addressHistory;
+    }
+
+    public void setAddressHistory(List<Address> addressHistory) {
+        this.addressHistory = addressHistory;
+    }
+
+    public Set<String> getFavoriteFoods() {
+        return favoriteFoods;
+    }
+
+    public void setFavoriteFoods(Set<String> favoriteFoods) {
+        this.favoriteFoods = favoriteFoods;
     }
 }
