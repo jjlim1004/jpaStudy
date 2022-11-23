@@ -80,6 +80,17 @@ public class Member {
 
 
     /**
+     * 8-2-4-2
+     *  값 타입보다 훨씬 더 좋다.
+     *  쿼리 최적화에도 좋고
+     *
+     @OneToMany(cascade = CascadeType.ALL,orphanRemoval = true)
+     @JoinColumn(name = "MEMBER_ID")
+     private List<AddressEntity> addressHistory =  new ArrayList<>();
+     * */
+
+
+    /**
      * 8-2-3-2
      * 제네릭이 String같이 값이 하나인경우애는 
      * @Column 어노테이션을 허용해준다.
@@ -90,7 +101,7 @@ public class Member {
             ,joinColumns = @JoinColumn(name = "member_id")
     )
     @Column(name = "FOOD_NAME")
-    private Set<String> favoriteFoods = new HashSet<>();
+    private Set<String> favoriteFoods = new HashSet();
 
     public Long getId() {
         return id;
