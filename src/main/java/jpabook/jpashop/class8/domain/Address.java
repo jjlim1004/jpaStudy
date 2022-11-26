@@ -11,7 +11,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Address {
     private String city;
-    @Column(name = "zip_code")
+    @Column(name = "zip_code",insertable = false ,updatable = false)
     private String zipcode;
     private String street;
 
