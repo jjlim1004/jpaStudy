@@ -1,6 +1,5 @@
 package jpql.jpashop.class9.domain;
 
-import jpql.jpashop.class4.domain.OrderStatus;
 
 import javax.persistence.*;
 
@@ -13,9 +12,18 @@ public class Order {
     @Column(name="ORDER_ID")
     private long id;
 
+    private int orderAmount;
+
+    @Embedded
+    private Address address;
+
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+
+    @ManyToOne
+    @JoinColumn(name = "product_id")
+    private Product product;
 
     public long getId() {
         return id;
@@ -31,5 +39,29 @@ public class Order {
 
     public void setMember(Member member) {
         this.member = member;
+    }
+
+    public int getOrderAmount() {
+        return orderAmount;
+    }
+
+    public void setOrderAmount(int orderAmount) {
+        this.orderAmount = orderAmount;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 }

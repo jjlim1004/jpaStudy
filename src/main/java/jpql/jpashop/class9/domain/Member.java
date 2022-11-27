@@ -13,14 +13,13 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username")
     private String username;
 
-    @Embedded
-    private Address address;
+    private int age;
 
-    @OneToMany(mappedBy = "member")
-    private List<Order> orders = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
 
     public Long getId() {
         return id;
@@ -38,20 +37,12 @@ public class Member {
         this.username = username;
     }
 
-    public List<Order> getOrders() {
-        return orders;
+    public int getAge() {
+        return age;
     }
 
-    public void setOrders(List<Order> orders) {
-        this.orders = orders;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
+    public void setAge(int age) {
+        this.age = age;
     }
 
 }

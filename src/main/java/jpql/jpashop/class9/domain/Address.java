@@ -8,17 +8,10 @@ import java.util.Objects;
 @Embeddable
 public class Address {
     private String city;
-    @Column(name = "zip_code",insertable = false ,updatable = false)
     private String zipcode;
     private String street;
 
     public Address() {
-    }
-
-    public Address(String city, String zipcode, String street) {
-        this.city = city;
-        this.zipcode = zipcode;
-        this.street = street;
     }
 
     public String getCity() {
