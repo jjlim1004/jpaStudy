@@ -88,12 +88,13 @@ public class Jpa9Main {
              * */
 
             /**
-             * 9-1-1
-             * */
+             * 9-1-1 ~ 9-2
+             *
             Member member = new Member();
             member.setUsername("member1");
             member.setAge(10);
             em.persist(member);
+             * */
 
             /**
              * 9-1-1
@@ -224,14 +225,35 @@ public class Jpa9Main {
              * 그리고 당연히 생성자를 사용할때 순서와 타입이 일치해야한다.
              * 패키지 명이 길어지면 적기가 힘들다.
              * 그래도 이런점은 querydsl에서 간단하게도 쓸 수 있다고 한다.
-             * */
+
             List<MemberDTO> result = em.createQuery("select new jpql.jpashop.class9.domain.MemberDTO( m.username, m.age) from Member m", MemberDTO.class)
                     .getResultList();
 
             MemberDTO memberDTO = result.get(0);
             System.out.println("memberDTO.username = " + memberDTO.getUsername());
             System.out.println("memberDTO.age = " + memberDTO.getAge());
+             * */
 
+            /**
+             * 9-3-1
+             * */
+            for (int i = 0; i < 100; i++) {
+                Member member = new Member();
+                member.setUsername("member"+i);
+                member.setAge(i);
+                em.persist(member);
+            }
+
+
+            List<Member> result = em.createQuery("select m from Member m order by m.age desc")
+                    .setFirstResult(0)
+                    .setMaxResults(10)
+                    .getResultList();
+
+            System.out.println("result.size = " + result.size());
+            for (Member member1 : result){
+                System.out.println("member1 = " + member1);
+            }
 
 
             tx.commit();
