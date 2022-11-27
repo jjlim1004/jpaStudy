@@ -1,13 +1,10 @@
-package jpabook.jpashop.class8.domain;
+package jpql.jpashop.class9.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.Objects;
 
 
-/**
- * 8-2-2-3
- * 임베디드 타입으로 쓰인다는 @Embeddable 어노테이션 설정
- * */
 @Embeddable
 public class Address {
     private String city;
@@ -46,5 +43,18 @@ public class Address {
 
     private void setStreet(String street) {
         this.street = street;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Address address = (Address) o;
+        return Objects.equals(city, address.city) && Objects.equals(zipcode, address.zipcode) && Objects.equals(street, address.street);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(city, zipcode, street);
     }
 }

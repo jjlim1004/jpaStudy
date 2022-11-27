@@ -1,8 +1,6 @@
-package jpabook.jpashop.class9.domain;
+package jpql.jpashop.class9.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "team")
@@ -16,8 +14,8 @@ public class Team {
     @Column(name = "team_name")
     private String teamName;
 
-    @OneToMany(mappedBy = "team")
-    private List<Member> members = new ArrayList<>();
+//    @OneToMany(mappedBy = "team")
+//    private List<Member> members = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -35,11 +33,11 @@ public class Team {
         this.teamName = teamName;
     }
 
-    public List<Member> getMembers() {
-        return members;
-    }
-
-    public void setMembers(List<Member> members) {
-        this.members = members;
-    }
+//    public List<Member> getMembers() {
+//        return members;
+//    }
+//
+//    public void setMembers(List<Member> members) {
+//        this.members = members;
+//    }
 }
