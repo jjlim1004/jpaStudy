@@ -25,4 +25,12 @@ public class Team {
     public void setName(String name) {
         this.name = name;
     }
+
+    public List<Member> getMember() {
+        return member;
+    }
+
+    public void setMember(List<Member> member) {
+        this.member = member;
+    }
 }

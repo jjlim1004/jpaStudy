@@ -1,10 +1,7 @@
 package jpql.jpashop.jpaMain;
 
 
-import jpql.jpashop.class9.domain.Address;
-import jpql.jpashop.class9.domain.Member;
-import jpql.jpashop.class9.domain.MemberDTO;
-import jpql.jpashop.class9.domain.Team;
+import jpql.jpashop.class9.domain.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -236,15 +233,14 @@ public class Jpa9Main {
 
             /**
              * 9-3-1
-             * */
+               페이징을 위한 코드
+
             for (int i = 0; i < 100; i++) {
                 Member member = new Member();
                 member.setUsername("member"+i);
                 member.setAge(i);
                 em.persist(member);
             }
-
-
             List<Member> result = em.createQuery("select m from Member m order by m.age desc")
                     .setFirstResult(0)
                     .setMaxResults(10)
@@ -254,7 +250,136 @@ public class Jpa9Main {
             for (Member member1 : result){
                 System.out.println("member1 = " + member1);
             }
+             * */
 
+            /**
+             * 9-4-1 
+             * 조인
+
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Member member = new Member();
+            member.setUsername("member");
+            member.setAge(10);
+            member.setTeam(team);
+            em.persist(member);
+
+            //String query = "select m from Member m, Team t where m.username= t.name";
+            String query = "select m from Member m left outer join Useless u on m.username = u.naame";
+            List<Member> result = em.createQuery(query, Member.class)
+                    .getResultList();
+             * */
+
+            /**
+             * 9-5-1
+             * 서브쿼리
+
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Member member = new Member();
+            member.setUsername("member");
+            member.setAge(10);
+            member.setTeam(team);
+            em.persist(member);
+
+            //String query = "select (select avg(m1.age) From Member m1) as average from Member m join Team t on m.username = t.name";
+            String query = "select (select avg(m1.age) From Member m1) as average from Member m join Team t on m.username = t.name";
+            List<Double> result = em.createQuery(query, Double.class)
+                    .getResultList();
+             * */
+
+            /**
+             * 9-6-1
+             *  타입
+
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Member member = new Member();
+            member.setUsername("member");
+            member.setAge(10);
+            member.setType(MemberType.ADMIN);
+            member.setTeam(team);
+            em.persist(member);
+
+            //문자, boolean, Enum 타입
+            //String query = "select m.username,'HELLO',true from Member m where m.type=:userType";
+            //Entity 타입 표현
+            String query = "select i from Item i where type(i) = Book";
+            List<Item> result = em.createQuery(query,Item.class)
+                    .getResultList();
+             * */
+
+            /**
+             * 9-7-1
+             * 분기문
+
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
+            Member member = new Member();
+            //member.setUsername("member");
+            member.setAge(11);
+            member.setTeam(team);
+            em.persist(member);
+
+            //case문
+//            String query = "select " +
+//                    "case when m.age <=10 then '10이하' "+
+//                    "when m.age >=12 then '12이상' "+
+//                    "else '11' end "+
+//                    "from Member m";
+            //coalesce 문
+//          String query = "select coalesce(m.username, '유령회원') from Member m ";
+            //null if문
+            String query = "select nullif(m.username, '관리자') from Member m ";
+            List<String> result = em.createQuery(query,String.class)
+                    .getResultList();
+            for (String s : result){
+                System.out.println("result = " + s);
+            }
+             * */
+
+
+            /**
+             * 9-8-1
+             * 기본함수
+             * */
+            //concat 예시
+//            String query = "select 'a'||'b' From Member m ";
+//            String query = "select concat('a','b') From Member m ";
+            //size예시
+//            String query = "select size(t.member) From Team t ";
+            //index 대충 예시 이런 느낌이다~~
+//            @OrderColumn
+//            String query = "select size(t.member) From Team t ";
+
+
+            Member member1 = new Member();
+            member1.setUsername("member1");
+            member1.setAge(10);
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("member2");
+            member2.setAge(11);
+            em.persist(member2);
+
+            //사용자 정의 함수 예시
+            //그래도 group_concat은 h2 기본 함수이다.
+            //String query = "select function('group_concat',m.username) From Member m ";
+            String query = "select group_concat(m.username) From Member m ";
+            List<String> result = em.createQuery(query,String.class)
+                    .getResultList();
+            for (String s : result){
+                System.out.println("result = " + s);
+            }
 
             tx.commit();
         }catch (Exception e){
