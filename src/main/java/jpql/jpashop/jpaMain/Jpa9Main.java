@@ -4,6 +4,7 @@ package jpql.jpashop.jpaMain;
 import jpql.jpashop.class9.domain.*;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -22,7 +23,7 @@ public class Jpa9Main {
              * 9-0-1
              * 이때의 Member는 테이블이 아니다. 엔티티이다.
              * *대신에 m과 같은 alias로 해야한다.
-             * m이라는 객체를 조회해 오라는 뜻이다.
+             * m이라는 객체를 조회해 오라는 뜻이다.*
 
             List<Member> result = em.createQuery(
                     "select m from Member m where m.username like '%kim%' "
@@ -38,7 +39,7 @@ public class Jpa9Main {
             for(Member m : result){
                 System.out.println(m.getUsername());
             }
-             * */
+             */
 
 
             /**
@@ -53,6 +54,7 @@ public class Jpa9Main {
              * (망한 스펙....?)
              *
              * 밑의 코드는 username이 username이 아닐때 where 절을 실행시키는 쿼리이다.
+
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Member> query = cb.createQuery(Member.class);
@@ -72,17 +74,24 @@ public class Jpa9Main {
 
             /**
              * 9-0-3
-             * nativeQuery
-            em.createNativeQuery("SELECT MEMBER_ID , CITY , STREET , ZIPCODE , USERNAME FROM MEMBER").getResultList();
-             * */
+             * nativeQuery*
+            String query ="SELECT MEMBER_ID , USERNAME, AGE FROM MEMBER";
+            List<Member> result = em.createNativeQuery(query).getResultList();
+             */
 
 
             /**
-             * 9-0-4
-             *  //dbconnection.executeQuery(select * from member)
-             *  //쿼리가 flush가 된게 아니다.
-             *  //결과는 0
-             * */
+             * 9-0-4* */
+             Member member = new Member();
+                          member.setUsername("member1");
+                          member.setAge(10);
+                          em.persist(member);
+
+             //flush 가 되는 시점은 commit할 때와 jpql의 query가 날아갈때
+             //dbconnection.executeQuery(select * from member)
+             //쿼리가 flush가 된게 아니다.
+             //결과는 0
+
 
             /**
              * 9-1-1 ~ 9-2
@@ -265,12 +274,13 @@ public class Jpa9Main {
             member.setAge(10);
             member.setTeam(team);
             em.persist(member);
-
+             * */
+            //Team과 Member간 연관관계가 없다고 가정할 때
             //String query = "select m from Member m, Team t where m.username= t.name";
             String query = "select m from Member m left outer join Useless u on m.username = u.naame";
             List<Member> result = em.createQuery(query, Member.class)
                     .getResultList();
-             * */
+
 
             /**
              * 9-5-1
@@ -350,7 +360,7 @@ public class Jpa9Main {
             /**
              * 9-8-1
              * 기본함수
-             * */
+
             //concat 예시
 //            String query = "select 'a'||'b' From Member m ";
 //            String query = "select concat('a','b') From Member m ";
@@ -380,6 +390,14 @@ public class Jpa9Main {
             for (String s : result){
                 System.out.println("result = " + s);
             }
+             * */
+
+            /**
+             * 10-1
+             * 다음과 같은 코드도 가능하다.
+             String query = "select t.members from Team t";
+             List<Collection> result = em.createQuery(query,Collection.class);
+             * */
 
             tx.commit();
         }catch (Exception e){
