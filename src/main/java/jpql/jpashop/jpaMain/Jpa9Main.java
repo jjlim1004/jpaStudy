@@ -81,7 +81,7 @@ public class Jpa9Main {
 
 
             /**
-             * 9-0-4* */
+             * 9-0-4*
              Member member = new Member();
                           member.setUsername("member1");
                           member.setAge(10);
@@ -91,7 +91,7 @@ public class Jpa9Main {
              //dbconnection.executeQuery(select * from member)
              //쿼리가 flush가 된게 아니다.
              //결과는 0
-
+             */
 
             /**
              * 9-1-1 ~ 9-2
@@ -274,13 +274,13 @@ public class Jpa9Main {
             member.setAge(10);
             member.setTeam(team);
             em.persist(member);
-             * */
+
             //Team과 Member간 연관관계가 없다고 가정할 때
             //String query = "select m from Member m, Team t where m.username= t.name";
             String query = "select m from Member m left outer join Useless u on m.username = u.naame";
             List<Member> result = em.createQuery(query, Member.class)
                     .getResultList();
-
+             * */
 
             /**
              * 9-5-1
@@ -398,6 +398,73 @@ public class Jpa9Main {
              String query = "select t.members from Team t";
              List<Collection> result = em.createQuery(query,Collection.class);
              * */
+            
+            /**
+             * 10-2-1
+             * 페치조인
+             * */
+            Team teamA = new Team();
+            team.setName("팀A");
+            em.persist(teamA);
+
+            Team teamB = new Team();
+            team.setName("팀B");
+            em.persist(teamB);
+
+            Member member1 = new Member();
+            member1.setUsername("member1");
+            member1.setTeam(teamA);
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("member2");
+            member2.setTeam(teamB);
+            em.persist(member2);
+
+            Member member3 = new Member();
+            member3.setUsername("member3");
+            member3.setTeam(teamB);
+            em.persist(member3);
+
+            String query = "select m from Member m";
+            List<Member> result = em.createQuery(query,Member.class);
+            for (Member m : result){
+                System.out.println(m.getUsername() + m.getTeam().getName());
+                /**
+                 * 10-2-2
+                 *
+                 * 다대일 관계에서
+                //getName 호출할때
+                 //getTeam으로 가져온 team은 프록시이다.
+                //회원1 , 팀A를 sql로 조회해서 가져온다.
+                //회원2 , 팀A 가 1차 캐시에서 저장되었기 때문에 조회 안함
+                //회원3,  팀B sql로 조회해서 가져온다.
+
+                //회원이 만약 100명이라면? 쿼리가 100번 이상 조회될수도 있다....
+                //이때 시용하는게 페치조인이다.
+                //그래서 아래와 같이 사용해야된다.
+                 String query = "select m from Member m join fetch m.team";
+
+                 join fetch를 이용해서 조회한 team은 프록시가 아닌 실재 엔티티이다.
+                 * */
+
+                /**
+                 * 10-2-3
+                 *
+                 * 일대다 관계에서
+                 String query = "select t from Team t join fetch t.members";
+                 일대다 조인은 데이터가 뻥튀기 될수도 있다.
+                 (= 1:N 에서 N의 데이터 수만큼)
+                 근데 jpa는 데이터가 뻥튀기 되있는지 알 수 가 없다.
+
+                 jpql의 distinct는 두가지 기능을 제공한다.
+                 1. sql에 distinct를 추가
+                 2. 애플리케이션에서 엔티티 중복을 제거
+                     쿼리를 날린다음 애플리케이션에서 데이터를 받은뒤 같은(중복된) 엔티티가 있으면
+                     중복된 엔티티 하나를 날린다.
+                     같은 엔티티 판단의 기준은 같은 식별자를 가졌나의 여부이다.
+                 * */
+            }
 
             tx.commit();
         }catch (Exception e){
