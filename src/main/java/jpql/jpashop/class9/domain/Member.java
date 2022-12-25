@@ -8,6 +8,7 @@ import java.util.List;
 @Entity(name = "MM")
 public class Member {
 
+
     @Id
     @Column(name = "member_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
