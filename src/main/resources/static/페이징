@@ -54,7 +54,7 @@ select member0_.member_id as member_i1_0_, member0_.age as age2_0_, member0_.tea
 /**********/
 근데 count 쿼리도 같이 날린다.
 반환 타입이 page 니까. page를 계산해야되니까 날린것
-성능향상을 위해 sort 쿼리는 없다.
+성능향상을 위해 count 쿼리에 sort 쿼리는 없다.
 /**********/
   select
         count(member0_.member_id) as col_0_0_
@@ -95,6 +95,7 @@ page to slice 로 변경하기도 쉽고
 
 /******************
 페이징 할때 실무에서 걸리는건
+콘텐츠 조회는 범위로 끊어서 조회하는거라 큰 문제가 안된다.
 콘텐츠 조회가 아닌
 토탈 카운트 조회 -> 일단 전체에 대한 데이터를 조회를 해야되기 때문에
                   데이터가 많아질수록 성능이 낮아짐

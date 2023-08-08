@@ -8,10 +8,10 @@ import javax.persistence.*;
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 //연관관계필드는 무한루프 가능성이 있음 안하는게 좋음
-@NamedQuery(
-        name = "Member.findByUsername",
-        query = "select m from Member m where m.username = :username"
-)
+//@NamedQuery(
+//        name = "Member.findByUsername",
+//        query = "select m from Member m where m.username = :username"
+//)
 @NamedEntityGraph(
         name="Member.all",
         attributeNodes = @NamedAttributeNode("team")

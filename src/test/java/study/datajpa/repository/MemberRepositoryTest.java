@@ -153,11 +153,11 @@ public class MemberRepositoryTest {
         //벌크연산 후에는 영속성 컨텍스트를 다 날려버려야 한다.
 
         em.flush();
-        em.clear();
+        em.clear(); //얘만 있어도 된다.
         //ex) 이렇게 조회하면 member5 의 age 는 41이 아닌 40이다.
-        List<Member> result = memberRepository.findByUsername("member5");
+        List<Member> result = memberRepository.findByUsername("member4");
         Member member5 = result.get(0);
-
+        System.out.println("!!!! " + member5);
 
         assertThat(resultCount).isEqualTo(4);
     }
