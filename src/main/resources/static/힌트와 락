@@ -3,6 +3,10 @@
 힌트란?
 jpa 구현체에게 알려주는 hint
 
+주로 read only 에 쓰인다.
+간혹가다 다른데 쓰이는거 같다.
+ex) namedNativeQuery
+
 flush 를 할때 sql이 나간다.
 flush 할때 1차 캐시에서 더티체킹을 한다.
 
