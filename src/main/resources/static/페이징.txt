@@ -1,0 +1,111 @@
+페이징
+- sql로 페이징 하려면 너무 힘듬
+- db마다도 다 다름(표준화가 되어있지 않음)
+- jpa 는 dialect 기반으로 쿼리가 나감. 다른 db를 쓴다해도 그 db에 대한 페이징 쿼리가 나감
+
+
+페이징 offset 0 일때 로그를 보면
+limit 정보는 있는데 offset 정보는 없다. offset이 0이라 굳이 안넣는것
+Hibernate:
+    select
+        member0_.member_id as member_i1_0_,
+        member0_.age as age2_0_,
+        member0_.team_id as team_id4_0_,
+        member0_.username as username3_0_
+    from
+        member member0_
+    where
+        member0_.age=?
+    order by
+        member0_.username desc limit ?
+2023-08-06 15:00:31.478  INFO 17636 --- [           main] p6spy                                    : #1691301631478 | took 12ms | statement | connection 3| url jdbc:h2:tcp://localhost/~/datajpa
+select member0_.member_id as member_i1_0_, member0_.age as age2_0_, member0_.team_id as team_id4_0_, member0_.username as username3_0_ from member member0_ where member0_.age=? order by member0_.username desc limit ?
+select member0_.member_id as member_i1_0_, member0_.age as age2_0_, member0_.team_id as team_id4_0_, member0_.username as username3_0_ from member member0_ where member0_.age=10 order by member0_.username desc limit 3;
+
+
+***
+페이징과 정렬은 기가막힌다 너무 좋다.
+두가지 인터페이스로 통일을 시켰다.
+페이징
+- 둘다 spring에서 지원해 주는것
+- 페이지와 정렬을 각각다 공통화를 시켰다.(db가 바뀌어도 다 맞게 지원)
+- 인터페이스로 통일함(공통화)
+
+- page 반환타입 : total count + content 쿼리
+- slice 반환타입 : content 쿼리 + 1
+- List : 쿼리없이 결과만 반화
+
+첫번째 test  - 이전과 같다. offset 이 없는데. 0번째 페이지라서 그렇다.
+    select
+        member0_.member_id as member_i1_0_,
+        member0_.age as age2_0_,
+        member0_.team_id as team_id4_0_,
+        member0_.username as username3_0_
+    from
+        member member0_
+    where
+        member0_.age=?
+    order by
+        member0_.username desc limit ?
+2023-08-06 16:11:47.843  INFO 864 --- [           main] p6spy                                    : #1691305907843 | took 0ms | statement | connection 3| url jdbc:h2:tcp://localhost/~/datajpa
+select member0_.member_id as member_i1_0_, member0_.age as age2_0_, member0_.team_id as team_id4_0_, member0_.username as username3_0_ from member member0_ where member0_.age=? order by member0_.username desc limit ?
+select member0_.member_id as member_i1_0_, member0_.age as age2_0_, member0_.team_id as team_id4_0_, member0_.username as username3_0_ from member member0_ where member0_.age=10 order by member0_.username desc limit 3;
+
+/**********/
+근데 count 쿼리도 같이 날린다.
+반환 타입이 page 니까. page를 계산해야되니까 날린것
+성능향상을 위해 count 쿼리에 sort 쿼리는 없다.
+/**********/
+  select
+        count(member0_.member_id) as col_0_0_
+    from
+        member member0_
+    where
+        member0_.age=?
+
+
+/**********/
+주로 Pageable 구현한 객체를 넘기면 된다. => 주로 PageRequest 객체
+-> 구현한 객체가 페이징하는 쿼리를 만들어준다.
+-> 반환 타입에 따라 totalcount를 날릴지 안날릴지 결정된다. ex) Page , Slice
+   Slice 는 다음체이지가 있는지 없는지만 확인을 하고 가져올지 말지를 판단
+
+- Slice의 경우 limit 4 가 나온다
+- count 쿼리도 없다.
+    select
+        member0_.member_id as member_i1_0_,
+        member0_.age as age2_0_,
+        member0_.team_id as team_id4_0_,
+        member0_.username as username3_0_
+    from
+        member member0_
+    where
+        member0_.age=?
+    order by
+        member0_.username desc limit ?
+2023-08-06 17:56:19.694  INFO 15260 --- [           main] p6spy                                    : #1691312179694 | took 0ms | statement | connection 3| url jdbc:h2:tcp://localhost/~/datajpa
+select member0_.member_id as member_i1_0_, member0_.age as age2_0_, member0_.team_id as team_id4_0_, member0_.username as username3_0_ from member member0_ where member0_.age=? order by member0_.username desc limit ?
+select member0_.member_id as member_i1_0_, member0_.age as age2_0_, member0_.team_id as team_id4_0_, member0_.username as username3_0_ from member member0_ where member0_.age=10 order by member0_.username desc limit 4;
+
+/*******/
+spring data jpa 를 쓰면
+slice to page
+page to slice 로 변경하기도 쉽고
+개발자가 구현 해야할것도 적다.
+
+/******************
+페이징 할때 실무에서 걸리는건
+콘텐츠 조회는 범위로 끊어서 조회하는거라 큰 문제가 안된다.
+콘텐츠 조회가 아닌
+토탈 카운트 조회 -> 일단 전체에 대한 데이터를 조회를 해야되기 때문에
+                  데이터가 많아질수록 성능이 낮아짐
+                  때문에 쿼리를 잘 짜야됨
+                  join이 많아지는 경우 등
+                  -쿼리가 복잡하다면 count 쿼리를 분리하는게 좋음
+정렬도 복잡해지면 Sort.by 로 잘 (성능이)안된다.
+그때는 그냥 @query 로 조건을 쿼리문에 작성하자
+
+
+/*****************
+api의 경우는 DTO로 변환해서 넘길것
+entity 로 넘기다보면 api 스펙이 변하기 때문
