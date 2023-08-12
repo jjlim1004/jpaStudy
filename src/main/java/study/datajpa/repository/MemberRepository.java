@@ -80,7 +80,7 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
     List<Member> findEntityGraphByUsername(@Param("username") String username);
 
     //쿼리 힌트
-    @QueryHints(value= @QueryHint(name = "org.hibernate.readOnly",value = "true"))
+    //@QueryHints(value= @QueryHint(name = "org.hibernate.readOnly",value = "true"))
     Member findReadOnlyByUsername(String username);
 
     //락
