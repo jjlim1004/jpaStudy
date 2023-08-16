@@ -16,7 +16,7 @@ import java.util.List;
 //즉, 개발자가 직접 구현체를 만들필요가 없다.
 //spring jpa 가 구현체를 만들어준다.
 //spring jpa에서 지원하는 인터페이스는 구현체를 만들어준다.
-public interface MemberRepository extends JpaRepository<Member,Long> {
+public interface MemberRepository extends JpaRepository<Member,Long>, MemberRepositoryCustom {
     //interface에 이미 정의된 많은 기능이 있음
 
     List<Member> findByUsername(String username);

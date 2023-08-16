@@ -1,0 +1,10 @@
+http에서 지원하는 페이징에 대한 설정을 하고 싶을때
+
+1.yaml에 설정한다.( 혹은 property 겠지)
+  이 방법은 전역 설정이다.
+
+2. 지역적으로 설정을 하고 싶으면
+   설정을 하고 싶은곳 (예제에서는 MemberController)
+   @PageableDefault(size= 5 , sort ="username")
+   과 같이 하면 된다.
+   이때 전역 설정보다 지역설정이 더 우선된다.

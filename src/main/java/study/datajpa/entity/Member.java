@@ -17,8 +17,8 @@ import javax.persistence.*;
         attributeNodes = @NamedAttributeNode("team")
 )
 @ToString(of = {"id","username","age"})
-public class Member {
-
+//public class Member extends JpaBaseEntity { // 그냥 Jpa 를 사용해서 처리 할때
+public class Member extends BaseEntity { //spring data jpa 를 사용해서 처리 할 때
     @Id @GeneratedValue
     @Column(name="member_id")
     private Long id;

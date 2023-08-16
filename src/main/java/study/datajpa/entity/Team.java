@@ -11,7 +11,8 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 //연관관계필드는 무한루프 가능성이 있음 안하는게 좋음
 @ToString(of = {"id","name"})
-public class Team {
+//public class Team extends JpaBaseEntity{ // 그냥 Jpa 를 사용해서 처리 할때
+public class Team extends BaseEntity{ // spring data Jpa 를 사용해서 처리 할때
 
     @Id @GeneratedValue
     @Column(name="team_id")
